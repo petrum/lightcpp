@@ -2,7 +2,10 @@
 
 int main()
 {
-    int i = 1;
+    STD_FUNC_BEGIN;
+    int i = 0;
     ENFORCE(i);
     return 0;
+    STD_FUNC_END;
+    return -1;
 }
