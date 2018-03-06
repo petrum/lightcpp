@@ -19,7 +19,10 @@ class FileLog
         os << std::setprecision(16);
     }
     ~FileLog();
-    std::ostringstream& operator()(TLogLevel level = logINFO);
+    std::ostringstream& getStream()
+    {
+        return os;
+    }
     static FILE*& getFile()
     {
         static FILE* pStream = stderr;
@@ -44,7 +47,7 @@ private:
     std::ostringstream os;
 };
 
-#define FILE_LOG(messageLevel) if (messageLevel > FileLog::getReportingLevel()) ; else FileLog(messageLevel)
+#define FILE_LOG(messageLevel) if (messageLevel > FileLog::getReportingLevel()) ; else FileLog(messageLevel).getStream()
 
 template <typename T>
 T enforce(T t, const char* e, const char* f, int n)
