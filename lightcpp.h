@@ -6,10 +6,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iomanip>
+#include <sys/time.h>
 
 std::string GetEnv(const char* pName, const char* pDefault);
 enum TLogLevel {logERROR, logWARNING, logINFO, logDEBUG, logALL};
-TLogLevel FromString(const std::string& level);
+TLogLevel levelFromString(const std::string& level);
+std::string nowTime();
+
+inline const char* const logToString(TLogLevel level)
+{
+    static const char* const buffer[] = {"ERROR", "WARNING", "INFO", "DEBUG", "ALL"};
+    return buffer[level];
+}
 
 class FileLog
 {
@@ -18,7 +26,15 @@ class FileLog
     {
         os << std::setprecision(16);
     }
-    ~FileLog();
+    ~FileLog()
+    {
+        std::ostringstream tmp;
+        tmp << nowTime() << " [" << pthread_self() << "]";
+        tmp << " " << logToString(messageLevel) << ": ";
+        tmp << os.str();
+        tmp << "\n";
+        write(tmp.str());
+    }
     std::ostringstream& getStream()
     {
         return os;
@@ -30,7 +46,7 @@ class FileLog
     }
     static TLogLevel& getReportingLevel()
     {
-        static TLogLevel reportingLevel = FromString(GetEnv("LOG_LEVEL", "INFO"));
+        static TLogLevel reportingLevel = levelFromString(GetEnv("LOG_LEVEL", "INFO"));
         return reportingLevel;
     }
     static void write(const std::string& msg)
@@ -80,7 +96,7 @@ inline std::string GetEnv(const char* pName, const char* pDefault)
     return pRes ? pRes : pDefault;
 }
 
-inline TLogLevel FromString(const std::string& level)
+inline TLogLevel levelFromString(const std::string& level)
 {   
     if (level == "ERROR")
         return logERROR;
@@ -95,3 +111,14 @@ inline TLogLevel FromString(const std::string& level)
     return logINFO;
 }
 
+inline std::string nowTime()
+{ 
+    struct timeval tv;
+    gettimeofday(&tv, 0);
+    char buffer[50];
+    tm r = {0};
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d %X", localtime_r(&tv.tv_sec, &r));
+    char result[100] = {0};
+    sprintf(result, "%s.%06ld", buffer, (long)tv.tv_usec);
+    return result;
+}
