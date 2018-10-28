@@ -5,6 +5,8 @@ int main()
 {
     STD_FUNCTION_BEGIN;
     int i = 0;
+    char arr[6];
+    char ch = 2[arr];
     FLOG(INFO) << "Hello world!";
     ENFORCE(i);
     return 0;
