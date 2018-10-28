@@ -7,6 +7,7 @@ int main()
     int i = 0;
     char arr[6];
     char ch = 2[arr];
+    char ch2 = *(arr + 3);
     FLOG(INFO) << "Hello world!";
     ENFORCE(i);
     return 0;
