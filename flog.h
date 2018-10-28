@@ -96,9 +96,11 @@ namespace cpputil {
 #define STD_FUNCTION_END }                      \
         catch (const std::exception& e)         \
         {                                       \
-            FILE_LOG(logERROR) << e.what();     \
+            FLOG(ERROR) << e.what();     \
         }                                       \
         catch (...)                             \
         {                                       \
-            FILE_LOG(logERROR) << "Unknown error"; \
+            FLOG(ERROR) << "Unknown error"; \
         }
+
+
